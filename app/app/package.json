@@ -63,13 +63,16 @@
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11",
     "webpack-dev-middleware": "^3.7.2",
-    "webpack-dev-server": "^3.10.3",
+    "webpack-dev-server": "^3.11.0",
     "webpack-merge": "^4.2.2"
   },
   "dependencies": {
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",
+    "eslint-plugin-import": "^2.22.0",
+    "favicons-webpack-plugin": "^3.0.1",
     "firebase": "^7.14.2",
+    "google-auth-library": "^6.0.2",
     "notistack": "^0.9.11",
     "react-firebase-hooks": "^2.1.1",
     "react-router-dom": "^5.1.2"

@@ -2,6 +2,7 @@
 const { resolve } = require('path');
 const { CheckerPlugin } = require('awesome-typescript-loader');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const webpack = require('webpack');
 
 module.exports = {
@@ -44,6 +45,7 @@ module.exports = {
   plugins: [
     new CheckerPlugin(),
     new HtmlWebpackPlugin({ template: 'index.html.ejs', }),
+    new FaviconsWebpackPlugin('/usr/src/app/src/assets/img/favicon.png'),
     new webpack.DefinePlugin({
       'process.env': {
         REACT_APP_FIREBASE_API_KEY: JSON.stringify(process.env.REACT_APP_FIREBASE_API_KEY),
