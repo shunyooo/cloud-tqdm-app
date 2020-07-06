@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const portNumber = process.env.REACT_APP_PRD_PORT;
-const sourceDir = 'dist';
+const sourceDir = 'public';
 
 app.use(express.static(sourceDir));
 

@@ -12,9 +12,20 @@ sh scripts/exec.sh npm install
 docker-compose up
 ```
 
-## Add package
+### Add package
 
 ```bash
-sh scripts/exec.sh npm install --save [ライブラリ名]
+sh scripts/exec.sh npm install --save [LibraryName]
 ```
 
+### Build
+
+```bash
+docker-compose run --rm app sh -c  yarn run build
+```
+
+### Deploy
+
+```bash
+firebase deploy
+```

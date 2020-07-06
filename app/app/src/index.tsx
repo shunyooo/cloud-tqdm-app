@@ -11,7 +11,7 @@ render(
   <SnackbarProvider maxSnack={3}>
     <BrowserRouter>
       <Switch>
-        <Route path="/" component={HomePage} />
+        <Route exact={true} path="/progress" component={HomePage} />
       </Switch>
     </BrowserRouter>
   </SnackbarProvider>,
