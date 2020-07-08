@@ -1,21 +1,10 @@
-import React, { useState, useEffect, ReactNode } from "react";
-import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
+import React, { useState, useEffect } from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import Grid from "@material-ui/core/Grid";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
-import { useAuthState } from "react-firebase-hooks/auth";
 import firebase from "../../plugins/firebase";
-import {
-  Box,
-  Paper,
-  Container,
-  LinearProgress,
-  BoxProps,
-  Card,
-} from "@material-ui/core";
+import { secondsToHms } from "../../plugins/formatter";
+import { Box, Container, Card } from "@material-ui/core";
 
 export interface Progress {
   id: string;
@@ -26,6 +15,7 @@ export interface Progress {
   status: string;
   elapsed: number;
   remaining: number;
+  itBySec: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -46,6 +36,8 @@ const useStyles = makeStyles((theme) => ({
     left: 0,
     backgroundColor: "#F5F8FF",
     borderRadius: "1px",
+    transitionDuration: "1s",
+    transitionTimingFunction: "ease",
   },
   progressInnerSolidBar: {
     position: "absolute",
@@ -63,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
   },
   progressTextArea: {
     paddingLeft: "2rem",
-    paddingTop: "0.3rem",
+    paddingTop: "0.5rem",
     display: "flex",
     flexDirection: "column",
     width: "100%",
@@ -91,9 +83,13 @@ const ProgressBox: React.FC<{ progress: Progress }> = ({ progress }) => {
             <Typography variant="h5">{`${p.description}`}</Typography>
           </Box>
           <Box paddingLeft={1} flex={1} position={"relative"}>
-            <Typography
-              className={classes.progressInfoText}
-            >{`${p.percentage}% | ${p.value}/${p.total} [00:00 < 00:00, 229it/s]`}</Typography>
+            <Typography className={classes.progressInfoText}>{`${Math.round(
+              p.percentage
+            )}% | ${p.value}/${p.total} [${secondsToHms(
+              p.elapsed
+            )} < ${secondsToHms(p.remaining)}, ${
+              Math.round(p.itBySec * 100) / 100
+            }it/s]`}</Typography>
           </Box>
         </Box>
       </Box>
@@ -118,6 +114,29 @@ const HomePage: React.FC = () => {
     return progressIdList;
   };
 
+  const convertDBToProgress = (progressId: string, dbDict: any): Progress => {
+    const updatedAt = new Date(dbDict.updated_at);
+    const createdAt = new Date(dbDict.created_at);
+    console.log(updatedAt, createdAt);
+    const elapsedSec: number =
+      (updatedAt.getTime() - createdAt.getTime()) / 1000;
+    const itBySec: number = dbDict.value / elapsedSec;
+    const remainingSec: number = (dbDict.total - dbDict.value) * itBySec;
+    return {
+      id: progressId,
+      total: dbDict.total,
+      value: dbDict.value,
+      description: dbDict.description,
+      percentage: (dbDict.value / dbDict.total) * 100,
+      elapsed: elapsedSec,
+      remaining: remainingSec,
+      itBySec: itBySec,
+      status: dbDict.status,
+      updatedAt: createdAt,
+      createdAt: updatedAt,
+    };
+  };
+
   const listenProgressId = (progressId: string): void => {
     // 登録済みであれば何もしない
     if (loadingState[progressId]) {
@@ -130,20 +149,11 @@ const HomePage: React.FC = () => {
     progressRef.on("value", (snapshot) => {
       setLoadingState({ ...loadingState, [progressId]: "done" });
       console.log("update", progressId, snapshot.val());
-      const res = snapshot.val();
-      const pData: Progress = {
-        id: progressId,
-        total: res.total,
-        value: res.value,
-        description: res.description,
-        percentage: (res.value / res.total) * 100,
-        elapsed: 100,
-        remaining: 100,
-        status: res.status,
-        updatedAt: res.updated_at,
-        createdAt: res.created_at,
-      };
-      setProgressList([...progressList, pData]);
+      const dbDict = snapshot.val();
+      setProgressList([
+        ...progressList,
+        convertDBToProgress(progressId, dbDict),
+      ]);
       console.log(progressList);
     });
   };
@@ -159,9 +169,6 @@ const HomePage: React.FC = () => {
     <Container className={classes.container}>
       <CssBaseline />
       <Box p={4}>
-        {/* <Typography variant="h2" component="h1">
-          {"cloud-tqdm"}
-        </Typography> */}
         <Box marginTop={2}>
           {progressList.map((progress, i) => (
             <ProgressBox key={`${progress.id}-${i}`} progress={progress} />
