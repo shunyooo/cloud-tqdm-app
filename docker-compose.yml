@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-        - ./app:/usr/src/app:delegated
+        - ./app:/app:delegated
     ports:
         - ${REACT_APP_DEV_PORT}:${REACT_APP_DEV_PORT}
         - ${REACT_APP_PRD_PORT}:${REACT_APP_PRD_PORT}
