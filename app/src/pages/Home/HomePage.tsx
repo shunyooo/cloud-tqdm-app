@@ -113,12 +113,10 @@ const HomePage: React.FC = () => {
   }>({});
 
   const getProgressIdFromUrl = (): string[] => {
-    console.log(location.search);
     const args = location.search.replace("?", "").split("&");
     const progressIdList = args
       .filter((arg) => arg.startsWith("pid="))
       .map((arg) => arg.replace("pid=", ""));
-    console.log(progressIdList);
     return progressIdList;
   };
 
@@ -149,19 +147,16 @@ const HomePage: React.FC = () => {
     if (loadingState[progressId]) {
       return;
     }
-    console.log(loadingState);
     setLoadingState({ ...loadingState, [progressId]: "loading" });
     const progressRef = firebase.database().ref(`progress/${progressId}`);
     // 監視対象に入っていなければ, listenに登録
     progressRef.on("value", (snapshot) => {
       setLoadingState({ ...loadingState, [progressId]: "done" });
-      console.log("update", progressId, snapshot.val());
       const dbDict = snapshot.val();
       setProgressList([
         ...progressList,
         convertDBToProgress(progressId, dbDict),
       ]);
-      console.log(progressList);
     });
   };
 
