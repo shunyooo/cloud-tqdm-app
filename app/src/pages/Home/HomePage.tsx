@@ -3,7 +3,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import firebase from "../../plugins/firebase";
-import { secondsToHms } from "../../plugins/formatter";
+import { secondsToHms, dateWithAgo } from "../../plugins/formatter";
 import { Box, Container, Card } from "@material-ui/core";
 
 export interface Progress {
@@ -67,6 +67,13 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     transform: "translate(0, -50%)",
   },
+  rightBottomNote: {
+    position: "absolute",
+    right: "10px",
+    bottom: "8px",
+    fontSize: "0.9rem",
+    color: "#939BB0",
+  },
 }));
 
 const ProgressBox: React.FC<{ progress: Progress }> = ({ progress }) => {
@@ -93,6 +100,7 @@ const ProgressBox: React.FC<{ progress: Progress }> = ({ progress }) => {
           </Box>
         </Box>
       </Box>
+      <Box className={classes.rightBottomNote}>{dateWithAgo(p.updatedAt)}</Box>
     </Card>
   );
 };
@@ -115,9 +123,8 @@ const HomePage: React.FC = () => {
   };
 
   const convertDBToProgress = (progressId: string, dbDict: any): Progress => {
-    const updatedAt = new Date(dbDict.updated_at);
-    const createdAt = new Date(dbDict.created_at);
-    console.log(updatedAt, createdAt);
+    const updatedAt = new Date(dbDict.updated_at * 1000);
+    const createdAt = new Date(dbDict.created_at * 1000);
     const elapsedSec: number =
       (updatedAt.getTime() - createdAt.getTime()) / 1000;
     const itBySec: number = dbDict.value / elapsedSec;
