@@ -1,6 +1,6 @@
 {
   "rules": {
     ".read": true,
-    ".write": "auth.uid === 'my-service-worker'"
+    ".write": "auth.uid === 'cloud-tqdm-service-worker'"
   }
 }
