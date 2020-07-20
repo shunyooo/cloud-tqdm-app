@@ -126,7 +126,7 @@ const HomePage: React.FC = () => {
     const elapsedSec: number =
       (updatedAt.getTime() - createdAt.getTime()) / 1000;
     const itBySec: number = dbDict.value / elapsedSec;
-    const remainingSec: number = (dbDict.total - dbDict.value) * itBySec;
+    const remainingSec: number = (dbDict.total - dbDict.value) / itBySec;
     return {
       id: progressId,
       total: dbDict.total,
